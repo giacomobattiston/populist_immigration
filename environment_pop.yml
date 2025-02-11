@@ -1,0 +1,9 @@
+name: pop
+channels: [conda-forge, nodefaults]
+dependencies:
+  - python
+  - matplotlib
+  - pandas
+  - openpyxl
+  - pip
+  - pip: [wordcloud]

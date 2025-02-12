@@ -54,12 +54,15 @@ for index, row in df.iterrows():
     counter += 1
     
     # Generate the word cloud with all words using the fixed layout
-    wordcloud = WordCloud(width=800, height=400, background_color='white', collocations=False, contour_color='black', contour_width=1, color_func=lambda *args, **kwargs: "gray").generate_from_frequencies(initial_wordcloud.words_)
+    wordcloud = WordCloud(width=800, height=400, background_color='white', collocations=False, random_state=None, contour_color='black', contour_width=1, color_func=lambda *args, **kwargs: "gray").generate_from_frequencies(initial_wordcloud.words_)
     wordcloud.layout_ = layout
     
     # Recolor the word cloud to shade words that occur more often in the cumulative list darker
     cumulative_word_freq = WordCloud().process_text(cumulative_words)
-    wordcloud = wordcloud.recolor(color_func=lambda word, font_size, position, orientation, random_state=None, **kwargs: f"rgb({255 - int(cumulative_word_freq.get(word, 0) * 255/10)}, {255 - int(cumulative_word_freq.get(word, 0) * 255/10)}, {255 - int(cumulative_word_freq.get(word, 0) * 255/10)})")
+    if counter != 11:
+        wordcloud = wordcloud.recolor(color_func=lambda word, font_size, position, orientation, random_state=None, **kwargs: f"rgb({0}, {255 - int(cumulative_word_freq.get(word, 0) * 255/10)}, {0})")
+    else:
+        wordcloud = wordcloud.recolor(color_func=lambda word, font_size, position, orientation, random_state=None, **kwargs: f"rgb({255 - (word != 'immigration')*int(cumulative_word_freq.get(word, 0) * 255/10)}, {255*(word != 'immigration') - (word != 'immigration')*int(cumulative_word_freq.get(word, 0) * 255/10)}, {255*(word != 'immigration') - (word != 'immigration')*int(cumulative_word_freq.get(word, 0) * 255/10)})")
     
     # Display the word cloud
     plt.figure(figsize=(10, 5))

@@ -45,7 +45,7 @@ cumulative_parties = []
 counter = 0
 
 # Generate the initial word cloud with all words to fix the layout
-initial_wordcloud = WordCloud(width=800, height=400, background_color='white', collocations=False, contour_color='black', contour_width=1, color_func=lambda *args, **kwargs: "gray").generate(all_words)
+initial_wordcloud = WordCloud(width=800, height=400, background_color='white', collocations=False, contour_color='black', contour_width=1, color_func=lambda *args, **kwargs: "green").generate(all_words)
 layout = initial_wordcloud.layout_
 
 for index, row in df.iterrows():
@@ -54,19 +54,26 @@ for index, row in df.iterrows():
     counter += 1
     
     # Generate the word cloud with all words using the fixed layout
-    wordcloud = WordCloud(width=800, height=400, background_color='white', collocations=False, random_state=None, contour_color='black', contour_width=1, color_func=lambda *args, **kwargs: "gray").generate_from_frequencies(initial_wordcloud.words_)
+    wordcloud = WordCloud(width=800, height=400, background_color='white', collocations=False, random_state=None, contour_color='black', contour_width=1, mode="RGBA", color_func=lambda *args, **kwargs: "green").generate_from_frequencies(initial_wordcloud.words_)
     wordcloud.layout_ = layout
     
+    # Recolor the word cloud to make words that occur less more transparent
+    #inten = 0.2
+    #cumulative_word_freq = WordCloud().process_text(cumulative_words)
+    #if counter != 11:
+    #    wordcloud = wordcloud.recolor(color_func=lambda word, font_size, position, orientation, random_state=None, mode="RGBA", **kwargs: f"rgba(0, 128, 0, 100)")
+
     # Recolor the word cloud to shade words that occur more often in the cumulative list darker
     cumulative_word_freq = WordCloud().process_text(cumulative_words)
     if counter != 11:
-        wordcloud = wordcloud.recolor(color_func=lambda word, font_size, position, orientation, random_state=None, **kwargs: f"rgb({0}, {255 - int(cumulative_word_freq.get(word, 0) * 255/10)}, {0})")
+        wordcloud = wordcloud.recolor(color_func=lambda word, font_size, position, orientation, random_state=None, mode="RGBA", **kwargs: f"rgba(0, 128, 0, {int(30 + cumulative_word_freq.get(word, 0) * 255/10)})")
     else:
-        wordcloud = wordcloud.recolor(color_func=lambda word, font_size, position, orientation, random_state=None, **kwargs: f"rgb({255 - (word != 'immigration')*int(cumulative_word_freq.get(word, 0) * 255/10)}, {255*(word != 'immigration') - (word != 'immigration')*int(cumulative_word_freq.get(word, 0) * 255/10)}, {255*(word != 'immigration') - (word != 'immigration')*int(cumulative_word_freq.get(word, 0) * 255/10)})")
-    
+        wordcloud = wordcloud.recolor(color_func=lambda word, font_size, position, orientation, random_state=None, mode="RGBA", **kwargs: f"rgba({int(255*(word == 'immigration'))}, {int(128*(word != 'immigration'))}, 0, {int(30 + cumulative_word_freq.get(word, 0) * 255/10)})")    
+
     # Display the word cloud
     plt.figure(figsize=(10, 5))
     plt.imshow(wordcloud, interpolation='bilinear')
     plt.axis('off')
     plt.savefig(f'wordcloud_{counter}.png')
     plt.show()
+
